@@ -63,5 +63,3 @@ class Vec3 {
 	
 }
 
-class Point3 extends Vec3 {}
-
