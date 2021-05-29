@@ -1,4 +1,6 @@
-package sandbox
+package main
+
+import core.Color
 
 final int image_width = 256
 final int image_height = 256

@@ -1,4 +1,4 @@
-package sandbox
+package core
 
 class Color extends Vec3 {
 	
