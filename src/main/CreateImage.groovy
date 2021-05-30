@@ -6,21 +6,28 @@ import core.Ray
 import core.Vec3
 
 
-boolean hit_sphere(final Point3 center, double radius, final Ray r) {
-    Vec3 oc = r.origin() - center
-    def a = Vec3.dot(r.direction(), r.direction())
-    def b = 2.0 * Vec3.dot(oc, r.direction());
-    def c = Vec3.dot(oc, oc) - radius*radius;
-    def discriminant = b*b - 4*a*c;
-    return (discriminant > 0);
+double hit_sphere(final Point3 center, double radius, final Ray r) {
+	Vec3 oc = r.origin() - center
+	double a = Vec3.dot(r.direction(), r.direction())
+	double b = 2.0 * Vec3.dot(oc, r.direction());
+	double c = Vec3.dot(oc, oc) - radius*radius;
+	double discriminant = b*b - 4*a*c;
+	if (discriminant < 0) {
+		return -1.0
+	}
+	else {
+		return (-b - Math.sqrt(discriminant) ) / (2.0*a)
+	}
 }
 
 Color ray_color(final Ray r) {
-	Vec3 unit_direction = r.direction().unit_vector()
-	def t = 0.5*( unit_direction.y() + 1.0 )
-	if (hit_sphere(new Point3(0,0,-1), 0.5, r)) {
-		return new Color(1,0,0, 2*t)
+	def t = hit_sphere(new Point3(0,0,-1), 0.5, r)
+	if (t > 0.0) {
+		def N = Vec3.unit_vector(r.at(t) - new Vec3(0,0,-1))
+		return new Color(N.x()+1, N.y()+1, N.z()+1)*0.5
 	}
+	Vec3 unit_direction = r.direction().unit_vector()
+	t = 0.5*( unit_direction.y() + 1.0 )
 	new Color(1,1,1, 1.0 - t) + new Color(0.5, 0.7, 1.0, t)
 }
 
@@ -43,19 +50,19 @@ def lower_left_corner = origin - horizontal/2 - vertical/2 - new Vec3(0, 0, foca
 // Render
 
 def f = new File('sample3.ppm')
-def sb = new StringBuilder()
+def sb = new StringBuilder(image_height*image_width*12)
 
 for (int j = image_height-1; j >= 0; --j) {
 	System.err << "\rScanlines remaining: $j"
+	def v = (double)j / (image_height-1)
 	for (int i = 0; i < image_width; ++i) {
 		def u = (double)i / (image_width-1)
-		def v = (double)j / (image_height-1)
 		def r = new Ray( origin, lower_left_corner + horizontal*u + vertical*v - origin)
-		
+
 		def pixel_color = ray_color(r)
-		
+
 		sb << "$pixel_color\n"
 	}
 }
 
-f.text = "P3\n$image_width $image_height\n255\n$sb" 
+f.text = "P3\n$image_width $image_height\n255\n$sb"
