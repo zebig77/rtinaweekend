@@ -2,13 +2,13 @@ package core
 
 class Vec3 {
 	
-	def e
+	def e = []
 	
-	public Vec3(double e0, double e1, double e2) {
+	Vec3(double e0, double e1, double e2) {
 		e = [ e0, e1, e2 ]
 	}
 	
-	public Vec3() {
+	Vec3() {
 		this( 0, 0, 0)
 	}
 	
@@ -55,11 +55,11 @@ class Vec3 {
 		unit_vector(this)
 	}
 	
-	public boolean equals(Vec3 v) {
+	boolean equals(Vec3 v) {
 		e[0] == v.x() && e[1] == v.y() && e[2] == v.z() 
 	}
 	
-	public String toString() { e.toString() }
+	String toString() { e.toString() }
 	
 }
 
