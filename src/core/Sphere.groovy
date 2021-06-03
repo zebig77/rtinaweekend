@@ -14,15 +14,15 @@ class Sphere implements Hittable {
 	public boolean hit(Ray r, double t_min, double t_max, HitRecord rec) {
     	Vec3 oc = r.origin() - center
     	def a = r.direction().length_squared()
-    	def half_b = dot(oc, r.direction())
+    	def half_b = Vec3.dot(oc, r.direction())
     	def c = oc.length_squared() - radius*radius
 
-    	def discriminant = half_b*half_b - a*c
+    	double discriminant = half_b*half_b - a*c
     	if (discriminant < 0) return false
-    	def sqrtd = Math.sqrt(discriminant)
+    	double sqrtd = Math.sqrt(discriminant)
 
 		// Find the nearest root that lies in the acceptable range.
-		def root = (-half_b - sqrtd) / a
+		double root = (-half_b - sqrtd) / a
 		if (root < t_min || t_max < root) {
 			root = (-half_b + sqrtd) / a
 			if (root < t_min || t_max < root)
@@ -31,7 +31,8 @@ class Sphere implements Hittable {
 
 		rec.t = root;
 		rec.p = r.at(rec.t);
-		rec.normal = (rec.p - center) / radius;
+		Vec3 outward_normal = (rec.p - center) / radius
+		rec.set_face_normal(r, outward_normal)
 
     	return true;	
 	}
