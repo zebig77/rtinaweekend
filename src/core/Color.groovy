@@ -24,5 +24,13 @@ class Color extends Vec3 {
 		int ib = (int)(255.999 * e[2])
 		"$ir $ig $ib"
 	}
-	
+
+	String toString(int samples_per_pixel) {
+		int ir = (int)(256 * clamp(e[0]/samples_per_pixel, 0, 0.999))
+		int ig = (int)(256 * clamp(e[1]/samples_per_pixel, 0, 0.999))
+		int ib = (int)(256 * clamp(e[2]/samples_per_pixel, 0, 0.999))
+		"$ir $ig $ib"
+	}
+
+
 }

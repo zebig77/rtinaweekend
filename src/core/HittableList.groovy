@@ -20,7 +20,7 @@ class HittableList {
 
     boolean hit(Ray r, double t_min, double t_max, HitRecord rec) {
         def temp_rec = new HitRecord()
-        boolean hit_anything = false
+        def hit_anything = false
         def closest_so_far = t_max
 
         objects.each {

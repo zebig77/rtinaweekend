@@ -15,7 +15,23 @@ class Vec3 {
 	double x() { e[0] }
 	double y() { e[1] }
 	double z() { e[2] }
-	
+
+	static double clamp(double e, double min, double max) {
+		if (e < min) return min
+		if (e > max) return max
+		return e
+	}
+
+	// returns a random vector with a length between min and max
+	static Vec3 random_in_unit_sphere() {
+		def rand = new Random()
+		while (true) {
+			def v = new Vec3(rand.nextDouble()*2 -1, rand.nextDouble()*2 -1, rand.nextDouble()*2 -1)
+			if (v.length() > 1.0) continue
+			return v
+		}
+	}
+
 	// operators overloading
 	Vec3 negative() { new Vec3( -e[0]+0.0, -e[1]+0.0, -e[2]+0.0) }
 	double getAt(int n) { e[n] }
