@@ -3,7 +3,7 @@ package core
 class Dielectric extends Material {
 
     double ir // Index of refraction
-    Color attenuation = new Color(1, 1, 1)
+    Color attenuation = Color.WHITE
 
     Dielectric(double index_of_refraction) {
         ir = index_of_refraction

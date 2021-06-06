@@ -1,15 +1,6 @@
 package main
 
-import core.Camera
-import core.Color
-import core.Dielectric
-import core.HittableList
-import core.Lambertian
-import core.Metal
-import core.Point3
-import core.Ray
-import core.Sphere
-import core.Vec3
+import core.*
 import groovy.time.TimeCategory
 import groovyx.gpars.GParsExecutorsPool
 
@@ -17,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 static Color ray_color(Ray r, HittableList world, int depth) {
 	if (depth <= 0) {
-		return new Color(0,0,0)
+		return Color.BLACK
 	}
 	def rec = world.hit(r, 0.001, Double.POSITIVE_INFINITY)
 	if (rec) {
@@ -27,7 +18,7 @@ static Color ray_color(Ray r, HittableList world, int depth) {
 			return attenuation * ray_color(scattered, world, depth-1)
 		}
 		else {
-			return new Color(0,0,0)
+			return Color.BLACK
 		}
 	}
 
@@ -45,22 +36,30 @@ int max_depth = 50
 
 // World
 def world = new HittableList()
-def material_ground = new Lambertian(	new Color(0.8, 0.8, 0.0))
-def material_center = new Lambertian(	new Color(0.1, 0.2, 0.5))
-def material_left   = new Dielectric(	1.5 )
-def material_right  = new Metal(		new Color(0.8, 0.6, 0.2), 0.0)
+def R = Math.cos(Math.PI/4)
 
-world.add(new Sphere(new Point3( 0.0, -100.5, -1.0), 100.0, material_ground))
-world.add(new Sphere(new Point3( 0.0,    0.0, -1.0),   0.5, material_center))
-world.add(new Sphere(new Point3(-1.0,    0.0, -1.0),   0.5, material_left))
-world.add(new Sphere(new Point3(-1.0,    0.0, -1.0),  -0.4, material_left))
-world.add(new Sphere(new Point3( 1.0,    0.0, -1.0),   0.5, material_right))
+def material_left  = new Lambertian(Color.BLUE)
+def material_right = new Lambertian(Color.RED)
+
+world.add(new Sphere(new Point3(-R, 0, -1), R, material_left))
+world.add(new Sphere(new Point3( R, 0, -1), R, material_right))
+
+//def material_ground = new Lambertian(	new Color(0.8, 0.8, 0.0))
+//def material_center = new Lambertian(	new Color(0.1, 0.2, 0.5))
+//def material_left   = new Dielectric(	1.5 )
+//def material_right  = new Metal(		new Color(0.8, 0.6, 0.2), 0.0)
+//
+//world.add(new Sphere(new Point3( 0.0, -100.5, -1.0), 100.0, material_ground))
+//world.add(new Sphere(new Point3( 0.0,    0.0, -1.0),   0.5, material_center))
+//world.add(new Sphere(new Point3(-1.0,    0.0, -1.0),   0.5, material_left))
+//world.add(new Sphere(new Point3(-1.0,    0.0, -1.0),  -0.4, material_left))
+//world.add(new Sphere(new Point3( 1.0,    0.0, -1.0),   0.5, material_right))
 
 // Camera
-def cam = new Camera()
+def cam = new Camera(90, aspect_ratio)
 
 // Render
-def f = new File('../../../images/sample14_aa10.ppm')
+def f = new File('../../../images/sample15_aa10.ppm')
 println "Creating "+f.getName()+"..."
 
 def sb = new StringBuilder(image_height*image_width*12)
@@ -74,7 +73,7 @@ for (int j = image_height-1; j >= 0; --j) {
 	GParsExecutorsPool.withPool() {
 		def line_colors = new ConcurrentHashMap(image_width)
 		range_x.eachParallel { i->
-			def pixel_color = new Color(0,0,0)
+			def pixel_color = Color.BLACK
 			for (int s = 0; s < samples_per_pixel; ++s) {
 				def u = (i + rand.nextDouble()) / (image_width-1)
 				def v = (j + rand.nextDouble()) / (image_height-1)

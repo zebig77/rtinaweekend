@@ -7,10 +7,14 @@ class Camera {
     Vec3 horizontal
     Vec3 vertical
 
-    Camera() {
-        def aspect_ratio = 16.0 / 9.0
-        def viewport_height = 2.0
+    Camera(double vfov, // vertical field of view in degrees
+            double aspect_ratio
+    ) {
+        def theta = Math.toRadians(vfov)
+        def h = Math.tan(theta/2)
+        def viewport_height = 2.0 * h
         def viewport_width = aspect_ratio * viewport_height
+
         def focal_length = 1.0
 
         origin = new Point3(0, 0, 0)

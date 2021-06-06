@@ -1,7 +1,13 @@
 package core
 
 class Color extends Vec3 {
-	
+
+	final static Color BLACK = new Color(0,0,0)
+	final static Color WHITE = new Color(1,1,1)
+	final static Color BLUE  = new Color(0,0,1)
+	final static Color GREEN = new Color(0,1,0)
+	final static Color RED   = new Color(1,0,0)
+
 	Color(double r, double g, double b) {
 		super(r, g, b)
 	}
