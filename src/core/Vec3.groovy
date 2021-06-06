@@ -54,6 +54,13 @@ class Vec3 {
 		return unit_vector(new Vec3(rand.nextDouble()*2 -1, rand.nextDouble()*2 -1, rand.nextDouble()*2 -1))
 	}
 
+	static Vec3 refract(Vec3 uv, Vec3 n, double etai_over_etat) {
+		double cos_theta = Double.min(dot( -uv, n), 1)
+		Vec3 r_out_perp = (uv + n * cos_theta) * etai_over_etat
+		Vec3 r_out_parallel = n * -Math.sqrt( Math.abs( 1.0 - r_out_perp.length_squared()))
+		return r_out_perp + r_out_parallel
+	}
+
 	// operators overloading
 	Vec3 negative() { new Vec3( -e[0]+0.0, -e[1]+0.0, -e[2]+0.0) }
 	double getAt(int n) { e[n] }
