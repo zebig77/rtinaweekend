@@ -23,7 +23,13 @@ class Color extends Vec3 {
 	Color plus(Color c) { new Color( e[0]+c.r(), e[1]+c.g(), e[2]+c.b()) }
 	Color plus(Vec3 v) { new Color( e[0]+v.x(), e[1]+v.y(), e[2]+v.z()) }
 	Color multiply(double t) { new Color( e[0]*t, e[1]*t, e[2]*t) }
+	Color div(double t) { new Color( e[0]/t, e[1]/t, e[2]/t) }
 	Color multiply(Color c) { new Color( e[0]*c.r(), e[1]*c.g(), e[2]*c.b()) }
+
+	static Color random() {
+		def rand = new Random()
+		new Color(rand.nextDouble(), rand.nextDouble(), rand.nextDouble())
+	}
 
 	String toString() {
 		int ir = (int)(255.999 * e[0])

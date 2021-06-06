@@ -28,43 +28,73 @@ static Color ray_color(Ray r, HittableList world, int depth) {
 }
 
 // Image
-double aspect_ratio = 16.0 / 9.0
-int image_width = 400
+double aspect_ratio = 3.0 / 2.0
+int image_width = 1200
 int image_height = (int) (image_width / aspect_ratio)
-int samples_per_pixel = 100
+int samples_per_pixel = 500
 int max_depth = 50
 
 // World
 def world = new HittableList()
+def rand = new Random()
 
-def material_ground = new Lambertian(	new Color(0.8, 0.8, 0.0))
-def material_center = new Lambertian(	new Color(0.1, 0.2, 0.5))
-def material_left   = new Dielectric(	1.5 )
-def material_right  = new Metal(		new Color(0.8, 0.6, 0.2), 0.0)
+def ground_material = new Lambertian(new Color(0.5, 0.5, 0.5))
+world.add new Sphere(new Point3(0, -1000,0), 1000, ground_material)
 
-world.add(new Sphere(new Point3( 0.0, -100.5, -1.0), 100.0, material_ground))
-world.add(new Sphere(new Point3( 0.0,    0.0, -1.0),   0.5, material_center))
-world.add(new Sphere(new Point3(-1.0,    0.0, -1.0),   0.5, material_left))
-world.add(new Sphere(new Point3(-1.0,    0.0, -1.0),  -0.4, material_left))
-world.add(new Sphere(new Point3( 1.0,    0.0, -1.0),   0.5, material_right))
+for( int a = -11; a < 11; a++ ) {
+	for( int b = -11; b < 11; b++ ) {
+		def choose_mat = rand.nextDouble()
+		def center = new Point3( a + 0.9*rand.nextDouble(), 0.2, b + 0.9*rand.nextDouble())
+
+		if ((center - new Point3(4, 0.2, 0)).length() > 0.9) {
+			def sphere_material
+
+			if (choose_mat < 0.8) {
+				// diffuse
+				def albedo = Color.random() * Color.random()
+				sphere_material = new Lambertian(albedo)
+			}
+			else if (choose_mat < 0.95) {
+				// metal
+				def albedo = Color.random()/2 + new Color(0.5,0.5,0.5)	// between 0.5 and 1
+				def fuzz = rand.nextDouble()/2		// between 0 and 0.5
+				sphere_material = new Metal(albedo, fuzz)
+			}
+			else {
+				// glass
+				sphere_material = new Dielectric(1.5)
+			}
+			world.add( new Sphere(center, 0.2, sphere_material))
+		}
+	}
+}
+
+def material1 = new Dielectric(1.5)
+world.add new Sphere(new Point3(0,1,0), 1, material1)
+
+def material2 = new Lambertian(new Color(0.4, 0.2, 0.1))
+world.add new Sphere(new Point3(-4,1,0), 1, material2)
+
+def material3 = new Metal(new Color(0.7, 0.6, 0.5), 0)
+world.add new Sphere(new Point3( 4,1,0), 1, material3)
+
 
 // Camera
 
 
-def lookfrom = new Point3(3,3,2)
-def lookat = new Point3(0,0,-1)
+def lookfrom = new Point3(13,2,3)
+def lookat = new Point3(0,0,0)
 def vup = new Vec3(0,1,0)
-def dist_to_focus = (lookfrom - lookat).length()
-def aperture = 2.0
+def dist_to_focus = 10.0
+def aperture = 0.1
 def cam = new Camera( lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus)
 
 // Render
-def f = new File('../../../images/sample18_aa10.ppm')
+def f = new File('../../../images/FinalImage1200.ppm')
 println "Creating "+f.getName()+"..."
 
 def sb = new StringBuilder(image_height*image_width*12)
 
-def rand = new Random()
 def range_x = 0..(image_width-1)
 
 def start = new Date()
