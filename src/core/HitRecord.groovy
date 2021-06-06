@@ -4,6 +4,7 @@ class HitRecord {
 	
 	Point3 p
 	Vec3 normal
+	Material material
 	double t
 
 	boolean front_face
@@ -19,11 +20,4 @@ class HitRecord {
 		}
 	}
 
-	void copy_to(HitRecord r) {
-		r.p = p
-		r.normal = normal
-		r.t = t
-		r.front_face = front_face
-	}
-	
 }

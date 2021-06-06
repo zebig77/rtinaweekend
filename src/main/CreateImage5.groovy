@@ -1,10 +1,11 @@
 package main
 
 import core.Camera
-import core.CartesianCategory
 import core.Color
 import core.HitRecord
 import core.HittableList
+import core.Lambertian
+import core.Metal
 import core.Point3
 import core.Ray
 import core.Sphere
@@ -18,34 +19,47 @@ static Color ray_color(Ray r, HittableList world, int depth) {
 	if (depth <= 0) {
 		return new Color(0,0,0)
 	}
-	def rec = new HitRecord()
-	if (world.hit(r, 0, Double.POSITIVE_INFINITY, rec)) {
-		Point3 target = rec.p + rec.normal + Vec3.random_in_unit_sphere()
-		return ray_color(new Ray(rec.p, target - rec.p), world, depth-1) * 0.5
+	def rec = world.hit(r, 0.001, Double.POSITIVE_INFINITY)
+	if (rec) {
+		def scattered = rec.material.scatter(r, rec)
+		if (scattered) {
+			def attenuation = rec.material.getAttenuation()
+			return attenuation * ray_color(scattered, world, depth-1)
+		}
+		else {
+			return new Color(0,0,0)
+		}
 	}
 
 	Vec3 unit_direction = r.direction().unit_vector()
 	def t = ( unit_direction.y() + 1.0 ) * 0.5
-	new Color(1,1,1, 1.0 - t) + new Color(0.5, 0.7, 1.0, t)
+	return new Color(1,1,1, 1.0 - t) + new Color(0.5, 0.7, 1.0, t)
 }
 
 // Image
 double aspect_ratio = 16.0 / 9.0
 int image_width = 400
 int image_height = (int) (image_width / aspect_ratio)
-int samples_per_pixel = 10
+int samples_per_pixel = 100
 int max_depth = 50
 
 // World
 def world = new HittableList()
-world.add(new Sphere(new Point3(0,0,-1), 0.5))
-world.add(new Sphere(new Point3(0,-100.5,-1), 100))
+def material_ground = new Lambertian(	new Color(0.8, 0.8, 0.0))
+def material_center = new Lambertian(	new Color(0.7, 0.3, 0.3))
+def material_left   = new Metal(		new Color(0.8, 0.8, 0.8))
+def material_right  = new Metal(		new Color(0.8, 0.6, 0.2))
+
+world.add(new Sphere(new Point3( 0.0, -100.5, -1.0), 100.0, material_ground))
+world.add(new Sphere(new Point3( 0.0,    0.0, -1.0),   0.5, material_center))
+world.add(new Sphere(new Point3(-1.0,    0.0, -1.0),   0.5, material_left))
+world.add(new Sphere(new Point3( 1.0,    0.0, -1.0),   0.5, material_right))
 
 // Camera
 def cam = new Camera()
 
 // Render
-def f = new File('../../../images/sample6_aa10.ppm')
+def f = new File('../../../images/sample9_aa10.ppm')
 println "Creating "+f.getName()+"..."
 
 def sb = new StringBuilder(image_height*image_width*12)

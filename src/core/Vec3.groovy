@@ -22,14 +22,36 @@ class Vec3 {
 		return e
 	}
 
-	// returns a random vector with a length between min and max
 	static Vec3 random_in_unit_sphere() {
 		def rand = new Random()
 		while (true) {
-			def v = new Vec3(rand.nextDouble()*2 -1, rand.nextDouble()*2 -1, rand.nextDouble()*2 -1)
-			if (v.length() > 1.0) continue
-			return v
+			def p = new Vec3(rand.nextDouble()*2 -1, rand.nextDouble()*2 -1, rand.nextDouble()*2 -1)
+			if (p.length_squared() >= 1) continue
+			return p
 		}
+	}
+
+	static Vec3 random_in_hemisphere(Vec3 normal) {
+		def in_unit_sphere = random_in_unit_sphere()
+		if (dot(in_unit_sphere, normal) > 0.0)
+			return in_unit_sphere
+		else
+			return -in_unit_sphere
+	}
+
+	boolean near_zero() {
+		def s = 1e-8
+		return Math.abs(e[0]) < s && Math.abs(e[1]) < s && Math.abs(e[2]) < s
+	}
+
+	static Vec3 reflect(Vec3 v, Vec3 n) {
+		return v - n*2*dot(v,n)
+	}
+
+	// returns a random vector with a length between min and max
+	static Vec3 random_unit_vector() {
+		def rand = new Random()
+		return unit_vector(new Vec3(rand.nextDouble()*2 -1, rand.nextDouble()*2 -1, rand.nextDouble()*2 -1))
 	}
 
 	// operators overloading
