@@ -3,7 +3,6 @@ package main
 import core.Camera
 import core.Color
 import core.Dielectric
-import core.HitRecord
 import core.HittableList
 import core.Lambertian
 import core.Metal
@@ -47,20 +46,21 @@ int max_depth = 50
 // World
 def world = new HittableList()
 def material_ground = new Lambertian(	new Color(0.8, 0.8, 0.0))
-def material_center = new Dielectric(	1.5 )
+def material_center = new Lambertian(	new Color(0.1, 0.2, 0.5))
 def material_left   = new Dielectric(	1.5 )
-def material_right  = new Metal(		new Color(0.8, 0.6, 0.2), 1.0)
+def material_right  = new Metal(		new Color(0.8, 0.6, 0.2), 0.0)
 
 world.add(new Sphere(new Point3( 0.0, -100.5, -1.0), 100.0, material_ground))
 world.add(new Sphere(new Point3( 0.0,    0.0, -1.0),   0.5, material_center))
 world.add(new Sphere(new Point3(-1.0,    0.0, -1.0),   0.5, material_left))
+world.add(new Sphere(new Point3(-1.0,    0.0, -1.0),  -0.4, material_left))
 world.add(new Sphere(new Point3( 1.0,    0.0, -1.0),   0.5, material_right))
 
 // Camera
 def cam = new Camera()
 
 // Render
-def f = new File('../../../images/sample12_aa10.ppm')
+def f = new File('../../../images/sample14_aa10.ppm')
 println "Creating "+f.getName()+"..."
 
 def sb = new StringBuilder(image_height*image_width*12)
